@@ -1,7 +1,7 @@
-"""django_project URL Configuration
+"""app URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/3.0/topics/http/urls/
+    https://docs.djangoproject.com/en/4.1/topics/http/urls/
 Examples:
 Function views
     1. Add an import:  from my_app import views
@@ -14,8 +14,33 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.shortcuts import redirect
+from django.urls import include, path
+from drf_yasg import openapi
+from drf_yasg.views import get_schema_view
+from rest_framework import permissions
+
+schema_view = get_schema_view(
+    openapi.Info(
+        title="Pezesha Money Transer API Documentation",
+        default_version="version 1.0",
+        description="All (modules) apps APIs",
+        terms_of_service="#",
+        contact=openapi.Contact(email="auabake@gmail.com"),
+        license=openapi.License(name="username:pezesha password:pezesha"),
+    ),
+    public=True,
+    permission_classes=[permissions.AllowAny],
+)
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path(
+        "api/v1/swagger/",
+        schema_view.with_ui("swagger", cache_timeout=0),
+        name="schema-swagger-ui",
+    ),
+    path("accounts/", admin.site.urls),
+    path("", lambda req: redirect("schema-swagger-ui")),
+    path("api/v1/", include("users.urls")),
+    path("api/v1/", include("pezesha.urls")),
 ]
